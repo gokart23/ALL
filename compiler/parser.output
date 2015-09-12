@@ -1,0 +1,1074 @@
+Grammar
+
+    0 $accept: program $end
+
+    1 program: %empty
+    2        | program func_decl
+
+    3 stmt_list: stmt
+    4          | stmt_list stmt
+
+    5 stmt: ';'
+    6     | expr ';'
+    7     | decl_stmt ';'
+    8     | if_stmt
+    9     | while_stmt
+   10     | '{' stmt_list '}'
+
+   11 expr: expr '+' expr
+   12     | expr '-' expr
+   13     | expr '*' expr
+   14     | expr '/' expr
+   15     | '(' expr ')'
+   16     | LABEL '=' expr
+   17     | INTEGER
+   18     | LABEL
+   19     | LABEL '[' expr ']'
+   20     | LABEL '(' func_call_arglist ')'
+
+   21 func_decl: KWD_INT LABEL '(' func_decl_arglist ')' stmt
+
+   22 func_decl_arglist: %empty
+   23                  | func_decl_arglist_arg
+   24                  | func_decl_arglist_arg ',' func_decl_arglist
+
+   25 func_decl_arglist_arg: KWD_INT LABEL
+
+   26 func_call_arglist: %empty
+   27                  | func_call_arglist_arg
+   28                  | func_call_arglist_arg ',' func_call_arglist
+
+   29 func_call_arglist_arg: LABEL
+
+   30 decl_stmt: KWD_INT decl_list
+
+   31 decl_list: var_decl
+   32          | var_decl ',' decl_list
+
+   33 var_decl: LABEL
+   34         | LABEL '[' INTEGER ']'
+
+   35 if_stmt: KWD_IF '(' expr ')' stmt
+
+   36 while_stmt: KWD_WHILE '(' expr ')' stmt
+
+
+Terminals, with rules where they appear
+
+$end (0) 0
+'(' (40) 15 20 21 35 36
+')' (41) 15 20 21 35 36
+'*' (42) 13
+'+' (43) 11
+',' (44) 24 28 32
+'-' (45) 12
+'/' (47) 14
+';' (59) 5 6 7
+'=' (61) 16
+'[' (91) 19 34
+']' (93) 19 34
+'{' (123) 10
+'}' (125) 10
+error (256)
+LABEL (258) 16 18 19 20 21 25 29 33 34
+INTEGER (259) 17 34
+KWD_INT (260) 21 25 30
+KWD_WHILE (261) 36
+KWD_IF (262) 35
+
+
+Nonterminals, with rules where they appear
+
+$accept (21)
+    on left: 0
+program (22)
+    on left: 1 2, on right: 0 2
+stmt_list (23)
+    on left: 3 4, on right: 4 10
+stmt (24)
+    on left: 5 6 7 8 9 10, on right: 3 4 21 35 36
+expr (25)
+    on left: 11 12 13 14 15 16 17 18 19 20, on right: 6 11 12 13 14
+    15 16 19 35 36
+func_decl (26)
+    on left: 21, on right: 2
+func_decl_arglist (27)
+    on left: 22 23 24, on right: 21 24
+func_decl_arglist_arg (28)
+    on left: 25, on right: 23 24
+func_call_arglist (29)
+    on left: 26 27 28, on right: 20 28
+func_call_arglist_arg (30)
+    on left: 29, on right: 27 28
+decl_stmt (31)
+    on left: 30, on right: 7
+decl_list (32)
+    on left: 31 32, on right: 30 32
+var_decl (33)
+    on left: 33 34, on right: 31 32
+if_stmt (34)
+    on left: 35, on right: 8
+while_stmt (35)
+    on left: 36, on right: 9
+
+
+State 0
+
+    0 $accept: . program $end
+    1 program: . %empty
+    2        | . program func_decl
+
+    $default  reduce using rule 1 (program)
+
+    program  go to state 1
+
+
+State 1
+
+    0 $accept: program . $end
+    2 program: program . func_decl
+   21 func_decl: . KWD_INT LABEL '(' func_decl_arglist ')' stmt
+
+    $end     shift, and go to state 2
+    KWD_INT  shift, and go to state 3
+
+    func_decl  go to state 4
+
+
+State 2
+
+    0 $accept: program $end .
+
+    $default  accept
+
+
+State 3
+
+   21 func_decl: KWD_INT . LABEL '(' func_decl_arglist ')' stmt
+
+    LABEL  shift, and go to state 5
+
+
+State 4
+
+    2 program: program func_decl .
+
+    $default  reduce using rule 2 (program)
+
+
+State 5
+
+   21 func_decl: KWD_INT LABEL . '(' func_decl_arglist ')' stmt
+
+    '('  shift, and go to state 6
+
+
+State 6
+
+   21 func_decl: KWD_INT LABEL '(' . func_decl_arglist ')' stmt
+   22 func_decl_arglist: . %empty  [')']
+   23                  | . func_decl_arglist_arg
+   24                  | . func_decl_arglist_arg ',' func_decl_arglist
+   25 func_decl_arglist_arg: . KWD_INT LABEL
+
+    KWD_INT  shift, and go to state 7
+
+    $default  reduce using rule 22 (func_decl_arglist)
+
+    func_decl_arglist      go to state 8
+    func_decl_arglist_arg  go to state 9
+
+
+State 7
+
+   25 func_decl_arglist_arg: KWD_INT . LABEL
+
+    LABEL  shift, and go to state 10
+
+
+State 8
+
+   21 func_decl: KWD_INT LABEL '(' func_decl_arglist . ')' stmt
+
+    ')'  shift, and go to state 11
+
+
+State 9
+
+   23 func_decl_arglist: func_decl_arglist_arg .  [')']
+   24                  | func_decl_arglist_arg . ',' func_decl_arglist
+
+    ','  shift, and go to state 12
+
+    $default  reduce using rule 23 (func_decl_arglist)
+
+
+State 10
+
+   25 func_decl_arglist_arg: KWD_INT LABEL .
+
+    $default  reduce using rule 25 (func_decl_arglist_arg)
+
+
+State 11
+
+    5 stmt: . ';'
+    6     | . expr ';'
+    7     | . decl_stmt ';'
+    8     | . if_stmt
+    9     | . while_stmt
+   10     | . '{' stmt_list '}'
+   11 expr: . expr '+' expr
+   12     | . expr '-' expr
+   13     | . expr '*' expr
+   14     | . expr '/' expr
+   15     | . '(' expr ')'
+   16     | . LABEL '=' expr
+   17     | . INTEGER
+   18     | . LABEL
+   19     | . LABEL '[' expr ']'
+   20     | . LABEL '(' func_call_arglist ')'
+   21 func_decl: KWD_INT LABEL '(' func_decl_arglist ')' . stmt
+   30 decl_stmt: . KWD_INT decl_list
+   35 if_stmt: . KWD_IF '(' expr ')' stmt
+   36 while_stmt: . KWD_WHILE '(' expr ')' stmt
+
+    LABEL      shift, and go to state 13
+    INTEGER    shift, and go to state 14
+    KWD_INT    shift, and go to state 15
+    KWD_WHILE  shift, and go to state 16
+    KWD_IF     shift, and go to state 17
+    ';'        shift, and go to state 18
+    '{'        shift, and go to state 19
+    '('        shift, and go to state 20
+
+    stmt        go to state 21
+    expr        go to state 22
+    decl_stmt   go to state 23
+    if_stmt     go to state 24
+    while_stmt  go to state 25
+
+
+State 12
+
+   22 func_decl_arglist: . %empty  [')']
+   23                  | . func_decl_arglist_arg
+   24                  | . func_decl_arglist_arg ',' func_decl_arglist
+   24                  | func_decl_arglist_arg ',' . func_decl_arglist
+   25 func_decl_arglist_arg: . KWD_INT LABEL
+
+    KWD_INT  shift, and go to state 7
+
+    $default  reduce using rule 22 (func_decl_arglist)
+
+    func_decl_arglist      go to state 26
+    func_decl_arglist_arg  go to state 9
+
+
+State 13
+
+   16 expr: LABEL . '=' expr
+   18     | LABEL .  ['+', '-', '*', '/', ';', ')', ']']
+   19     | LABEL . '[' expr ']'
+   20     | LABEL . '(' func_call_arglist ')'
+
+    '='  shift, and go to state 27
+    '('  shift, and go to state 28
+    '['  shift, and go to state 29
+
+    $default  reduce using rule 18 (expr)
+
+
+State 14
+
+   17 expr: INTEGER .
+
+    $default  reduce using rule 17 (expr)
+
+
+State 15
+
+   30 decl_stmt: KWD_INT . decl_list
+   31 decl_list: . var_decl
+   32          | . var_decl ',' decl_list
+   33 var_decl: . LABEL
+   34         | . LABEL '[' INTEGER ']'
+
+    LABEL  shift, and go to state 30
+
+    decl_list  go to state 31
+    var_decl   go to state 32
+
+
+State 16
+
+   36 while_stmt: KWD_WHILE . '(' expr ')' stmt
+
+    '('  shift, and go to state 33
+
+
+State 17
+
+   35 if_stmt: KWD_IF . '(' expr ')' stmt
+
+    '('  shift, and go to state 34
+
+
+State 18
+
+    5 stmt: ';' .
+
+    $default  reduce using rule 5 (stmt)
+
+
+State 19
+
+    3 stmt_list: . stmt
+    4          | . stmt_list stmt
+    5 stmt: . ';'
+    6     | . expr ';'
+    7     | . decl_stmt ';'
+    8     | . if_stmt
+    9     | . while_stmt
+   10     | . '{' stmt_list '}'
+   10     | '{' . stmt_list '}'
+   11 expr: . expr '+' expr
+   12     | . expr '-' expr
+   13     | . expr '*' expr
+   14     | . expr '/' expr
+   15     | . '(' expr ')'
+   16     | . LABEL '=' expr
+   17     | . INTEGER
+   18     | . LABEL
+   19     | . LABEL '[' expr ']'
+   20     | . LABEL '(' func_call_arglist ')'
+   30 decl_stmt: . KWD_INT decl_list
+   35 if_stmt: . KWD_IF '(' expr ')' stmt
+   36 while_stmt: . KWD_WHILE '(' expr ')' stmt
+
+    LABEL      shift, and go to state 13
+    INTEGER    shift, and go to state 14
+    KWD_INT    shift, and go to state 15
+    KWD_WHILE  shift, and go to state 16
+    KWD_IF     shift, and go to state 17
+    ';'        shift, and go to state 18
+    '{'        shift, and go to state 19
+    '('        shift, and go to state 20
+
+    stmt_list   go to state 35
+    stmt        go to state 36
+    expr        go to state 22
+    decl_stmt   go to state 23
+    if_stmt     go to state 24
+    while_stmt  go to state 25
+
+
+State 20
+
+   11 expr: . expr '+' expr
+   12     | . expr '-' expr
+   13     | . expr '*' expr
+   14     | . expr '/' expr
+   15     | . '(' expr ')'
+   15     | '(' . expr ')'
+   16     | . LABEL '=' expr
+   17     | . INTEGER
+   18     | . LABEL
+   19     | . LABEL '[' expr ']'
+   20     | . LABEL '(' func_call_arglist ')'
+
+    LABEL    shift, and go to state 13
+    INTEGER  shift, and go to state 14
+    '('      shift, and go to state 20
+
+    expr  go to state 37
+
+
+State 21
+
+   21 func_decl: KWD_INT LABEL '(' func_decl_arglist ')' stmt .
+
+    $default  reduce using rule 21 (func_decl)
+
+
+State 22
+
+    6 stmt: expr . ';'
+   11 expr: expr . '+' expr
+   12     | expr . '-' expr
+   13     | expr . '*' expr
+   14     | expr . '/' expr
+
+    '+'  shift, and go to state 38
+    '-'  shift, and go to state 39
+    '*'  shift, and go to state 40
+    '/'  shift, and go to state 41
+    ';'  shift, and go to state 42
+
+
+State 23
+
+    7 stmt: decl_stmt . ';'
+
+    ';'  shift, and go to state 43
+
+
+State 24
+
+    8 stmt: if_stmt .
+
+    $default  reduce using rule 8 (stmt)
+
+
+State 25
+
+    9 stmt: while_stmt .
+
+    $default  reduce using rule 9 (stmt)
+
+
+State 26
+
+   24 func_decl_arglist: func_decl_arglist_arg ',' func_decl_arglist .
+
+    $default  reduce using rule 24 (func_decl_arglist)
+
+
+State 27
+
+   11 expr: . expr '+' expr
+   12     | . expr '-' expr
+   13     | . expr '*' expr
+   14     | . expr '/' expr
+   15     | . '(' expr ')'
+   16     | . LABEL '=' expr
+   16     | LABEL '=' . expr
+   17     | . INTEGER
+   18     | . LABEL
+   19     | . LABEL '[' expr ']'
+   20     | . LABEL '(' func_call_arglist ')'
+
+    LABEL    shift, and go to state 13
+    INTEGER  shift, and go to state 14
+    '('      shift, and go to state 20
+
+    expr  go to state 44
+
+
+State 28
+
+   20 expr: LABEL '(' . func_call_arglist ')'
+   26 func_call_arglist: . %empty  [')']
+   27                  | . func_call_arglist_arg
+   28                  | . func_call_arglist_arg ',' func_call_arglist
+   29 func_call_arglist_arg: . LABEL
+
+    LABEL  shift, and go to state 45
+
+    $default  reduce using rule 26 (func_call_arglist)
+
+    func_call_arglist      go to state 46
+    func_call_arglist_arg  go to state 47
+
+
+State 29
+
+   11 expr: . expr '+' expr
+   12     | . expr '-' expr
+   13     | . expr '*' expr
+   14     | . expr '/' expr
+   15     | . '(' expr ')'
+   16     | . LABEL '=' expr
+   17     | . INTEGER
+   18     | . LABEL
+   19     | . LABEL '[' expr ']'
+   19     | LABEL '[' . expr ']'
+   20     | . LABEL '(' func_call_arglist ')'
+
+    LABEL    shift, and go to state 13
+    INTEGER  shift, and go to state 14
+    '('      shift, and go to state 20
+
+    expr  go to state 48
+
+
+State 30
+
+   33 var_decl: LABEL .  [';', ',']
+   34         | LABEL . '[' INTEGER ']'
+
+    '['  shift, and go to state 49
+
+    $default  reduce using rule 33 (var_decl)
+
+
+State 31
+
+   30 decl_stmt: KWD_INT decl_list .
+
+    $default  reduce using rule 30 (decl_stmt)
+
+
+State 32
+
+   31 decl_list: var_decl .  [';']
+   32          | var_decl . ',' decl_list
+
+    ','  shift, and go to state 50
+
+    $default  reduce using rule 31 (decl_list)
+
+
+State 33
+
+   11 expr: . expr '+' expr
+   12     | . expr '-' expr
+   13     | . expr '*' expr
+   14     | . expr '/' expr
+   15     | . '(' expr ')'
+   16     | . LABEL '=' expr
+   17     | . INTEGER
+   18     | . LABEL
+   19     | . LABEL '[' expr ']'
+   20     | . LABEL '(' func_call_arglist ')'
+   36 while_stmt: KWD_WHILE '(' . expr ')' stmt
+
+    LABEL    shift, and go to state 13
+    INTEGER  shift, and go to state 14
+    '('      shift, and go to state 20
+
+    expr  go to state 51
+
+
+State 34
+
+   11 expr: . expr '+' expr
+   12     | . expr '-' expr
+   13     | . expr '*' expr
+   14     | . expr '/' expr
+   15     | . '(' expr ')'
+   16     | . LABEL '=' expr
+   17     | . INTEGER
+   18     | . LABEL
+   19     | . LABEL '[' expr ']'
+   20     | . LABEL '(' func_call_arglist ')'
+   35 if_stmt: KWD_IF '(' . expr ')' stmt
+
+    LABEL    shift, and go to state 13
+    INTEGER  shift, and go to state 14
+    '('      shift, and go to state 20
+
+    expr  go to state 52
+
+
+State 35
+
+    4 stmt_list: stmt_list . stmt
+    5 stmt: . ';'
+    6     | . expr ';'
+    7     | . decl_stmt ';'
+    8     | . if_stmt
+    9     | . while_stmt
+   10     | . '{' stmt_list '}'
+   10     | '{' stmt_list . '}'
+   11 expr: . expr '+' expr
+   12     | . expr '-' expr
+   13     | . expr '*' expr
+   14     | . expr '/' expr
+   15     | . '(' expr ')'
+   16     | . LABEL '=' expr
+   17     | . INTEGER
+   18     | . LABEL
+   19     | . LABEL '[' expr ']'
+   20     | . LABEL '(' func_call_arglist ')'
+   30 decl_stmt: . KWD_INT decl_list
+   35 if_stmt: . KWD_IF '(' expr ')' stmt
+   36 while_stmt: . KWD_WHILE '(' expr ')' stmt
+
+    LABEL      shift, and go to state 13
+    INTEGER    shift, and go to state 14
+    KWD_INT    shift, and go to state 15
+    KWD_WHILE  shift, and go to state 16
+    KWD_IF     shift, and go to state 17
+    ';'        shift, and go to state 18
+    '{'        shift, and go to state 19
+    '}'        shift, and go to state 53
+    '('        shift, and go to state 20
+
+    stmt        go to state 54
+    expr        go to state 22
+    decl_stmt   go to state 23
+    if_stmt     go to state 24
+    while_stmt  go to state 25
+
+
+State 36
+
+    3 stmt_list: stmt .
+
+    $default  reduce using rule 3 (stmt_list)
+
+
+State 37
+
+   11 expr: expr . '+' expr
+   12     | expr . '-' expr
+   13     | expr . '*' expr
+   14     | expr . '/' expr
+   15     | '(' expr . ')'
+
+    '+'  shift, and go to state 38
+    '-'  shift, and go to state 39
+    '*'  shift, and go to state 40
+    '/'  shift, and go to state 41
+    ')'  shift, and go to state 55
+
+
+State 38
+
+   11 expr: . expr '+' expr
+   11     | expr '+' . expr
+   12     | . expr '-' expr
+   13     | . expr '*' expr
+   14     | . expr '/' expr
+   15     | . '(' expr ')'
+   16     | . LABEL '=' expr
+   17     | . INTEGER
+   18     | . LABEL
+   19     | . LABEL '[' expr ']'
+   20     | . LABEL '(' func_call_arglist ')'
+
+    LABEL    shift, and go to state 13
+    INTEGER  shift, and go to state 14
+    '('      shift, and go to state 20
+
+    expr  go to state 56
+
+
+State 39
+
+   11 expr: . expr '+' expr
+   12     | . expr '-' expr
+   12     | expr '-' . expr
+   13     | . expr '*' expr
+   14     | . expr '/' expr
+   15     | . '(' expr ')'
+   16     | . LABEL '=' expr
+   17     | . INTEGER
+   18     | . LABEL
+   19     | . LABEL '[' expr ']'
+   20     | . LABEL '(' func_call_arglist ')'
+
+    LABEL    shift, and go to state 13
+    INTEGER  shift, and go to state 14
+    '('      shift, and go to state 20
+
+    expr  go to state 57
+
+
+State 40
+
+   11 expr: . expr '+' expr
+   12     | . expr '-' expr
+   13     | . expr '*' expr
+   13     | expr '*' . expr
+   14     | . expr '/' expr
+   15     | . '(' expr ')'
+   16     | . LABEL '=' expr
+   17     | . INTEGER
+   18     | . LABEL
+   19     | . LABEL '[' expr ']'
+   20     | . LABEL '(' func_call_arglist ')'
+
+    LABEL    shift, and go to state 13
+    INTEGER  shift, and go to state 14
+    '('      shift, and go to state 20
+
+    expr  go to state 58
+
+
+State 41
+
+   11 expr: . expr '+' expr
+   12     | . expr '-' expr
+   13     | . expr '*' expr
+   14     | . expr '/' expr
+   14     | expr '/' . expr
+   15     | . '(' expr ')'
+   16     | . LABEL '=' expr
+   17     | . INTEGER
+   18     | . LABEL
+   19     | . LABEL '[' expr ']'
+   20     | . LABEL '(' func_call_arglist ')'
+
+    LABEL    shift, and go to state 13
+    INTEGER  shift, and go to state 14
+    '('      shift, and go to state 20
+
+    expr  go to state 59
+
+
+State 42
+
+    6 stmt: expr ';' .
+
+    $default  reduce using rule 6 (stmt)
+
+
+State 43
+
+    7 stmt: decl_stmt ';' .
+
+    $default  reduce using rule 7 (stmt)
+
+
+State 44
+
+   11 expr: expr . '+' expr
+   12     | expr . '-' expr
+   13     | expr . '*' expr
+   14     | expr . '/' expr
+   16     | LABEL '=' expr .  [';', ')', ']']
+
+    '+'  shift, and go to state 38
+    '-'  shift, and go to state 39
+    '*'  shift, and go to state 40
+    '/'  shift, and go to state 41
+
+    $default  reduce using rule 16 (expr)
+
+    Conflict between rule 16 and token '+' resolved as shift ('=' < '+').
+    Conflict between rule 16 and token '-' resolved as shift ('=' < '-').
+    Conflict between rule 16 and token '*' resolved as shift ('=' < '*').
+    Conflict between rule 16 and token '/' resolved as shift ('=' < '/').
+
+
+State 45
+
+   29 func_call_arglist_arg: LABEL .
+
+    $default  reduce using rule 29 (func_call_arglist_arg)
+
+
+State 46
+
+   20 expr: LABEL '(' func_call_arglist . ')'
+
+    ')'  shift, and go to state 60
+
+
+State 47
+
+   27 func_call_arglist: func_call_arglist_arg .  [')']
+   28                  | func_call_arglist_arg . ',' func_call_arglist
+
+    ','  shift, and go to state 61
+
+    $default  reduce using rule 27 (func_call_arglist)
+
+
+State 48
+
+   11 expr: expr . '+' expr
+   12     | expr . '-' expr
+   13     | expr . '*' expr
+   14     | expr . '/' expr
+   19     | LABEL '[' expr . ']'
+
+    '+'  shift, and go to state 38
+    '-'  shift, and go to state 39
+    '*'  shift, and go to state 40
+    '/'  shift, and go to state 41
+    ']'  shift, and go to state 62
+
+
+State 49
+
+   34 var_decl: LABEL '[' . INTEGER ']'
+
+    INTEGER  shift, and go to state 63
+
+
+State 50
+
+   31 decl_list: . var_decl
+   32          | . var_decl ',' decl_list
+   32          | var_decl ',' . decl_list
+   33 var_decl: . LABEL
+   34         | . LABEL '[' INTEGER ']'
+
+    LABEL  shift, and go to state 30
+
+    decl_list  go to state 64
+    var_decl   go to state 32
+
+
+State 51
+
+   11 expr: expr . '+' expr
+   12     | expr . '-' expr
+   13     | expr . '*' expr
+   14     | expr . '/' expr
+   36 while_stmt: KWD_WHILE '(' expr . ')' stmt
+
+    '+'  shift, and go to state 38
+    '-'  shift, and go to state 39
+    '*'  shift, and go to state 40
+    '/'  shift, and go to state 41
+    ')'  shift, and go to state 65
+
+
+State 52
+
+   11 expr: expr . '+' expr
+   12     | expr . '-' expr
+   13     | expr . '*' expr
+   14     | expr . '/' expr
+   35 if_stmt: KWD_IF '(' expr . ')' stmt
+
+    '+'  shift, and go to state 38
+    '-'  shift, and go to state 39
+    '*'  shift, and go to state 40
+    '/'  shift, and go to state 41
+    ')'  shift, and go to state 66
+
+
+State 53
+
+   10 stmt: '{' stmt_list '}' .
+
+    $default  reduce using rule 10 (stmt)
+
+
+State 54
+
+    4 stmt_list: stmt_list stmt .
+
+    $default  reduce using rule 4 (stmt_list)
+
+
+State 55
+
+   15 expr: '(' expr ')' .
+
+    $default  reduce using rule 15 (expr)
+
+
+State 56
+
+   11 expr: expr . '+' expr
+   11     | expr '+' expr .  ['+', '-', ';', ')', ']']
+   12     | expr . '-' expr
+   13     | expr . '*' expr
+   14     | expr . '/' expr
+
+    '*'  shift, and go to state 40
+    '/'  shift, and go to state 41
+
+    $default  reduce using rule 11 (expr)
+
+    Conflict between rule 11 and token '+' resolved as reduce (%left '+').
+    Conflict between rule 11 and token '-' resolved as reduce (%left '-').
+    Conflict between rule 11 and token '*' resolved as shift ('+' < '*').
+    Conflict between rule 11 and token '/' resolved as shift ('+' < '/').
+
+
+State 57
+
+   11 expr: expr . '+' expr
+   12     | expr . '-' expr
+   12     | expr '-' expr .  ['+', '-', ';', ')', ']']
+   13     | expr . '*' expr
+   14     | expr . '/' expr
+
+    '*'  shift, and go to state 40
+    '/'  shift, and go to state 41
+
+    $default  reduce using rule 12 (expr)
+
+    Conflict between rule 12 and token '+' resolved as reduce (%left '+').
+    Conflict between rule 12 and token '-' resolved as reduce (%left '-').
+    Conflict between rule 12 and token '*' resolved as shift ('-' < '*').
+    Conflict between rule 12 and token '/' resolved as shift ('-' < '/').
+
+
+State 58
+
+   11 expr: expr . '+' expr
+   12     | expr . '-' expr
+   13     | expr . '*' expr
+   13     | expr '*' expr .  ['+', '-', '*', '/', ';', ')', ']']
+   14     | expr . '/' expr
+
+    $default  reduce using rule 13 (expr)
+
+    Conflict between rule 13 and token '+' resolved as reduce ('+' < '*').
+    Conflict between rule 13 and token '-' resolved as reduce ('-' < '*').
+    Conflict between rule 13 and token '*' resolved as reduce (%left '*').
+    Conflict between rule 13 and token '/' resolved as reduce (%left '/').
+
+
+State 59
+
+   11 expr: expr . '+' expr
+   12     | expr . '-' expr
+   13     | expr . '*' expr
+   14     | expr . '/' expr
+   14     | expr '/' expr .  ['+', '-', '*', '/', ';', ')', ']']
+
+    $default  reduce using rule 14 (expr)
+
+    Conflict between rule 14 and token '+' resolved as reduce ('+' < '/').
+    Conflict between rule 14 and token '-' resolved as reduce ('-' < '/').
+    Conflict between rule 14 and token '*' resolved as reduce (%left '*').
+    Conflict between rule 14 and token '/' resolved as reduce (%left '/').
+
+
+State 60
+
+   20 expr: LABEL '(' func_call_arglist ')' .
+
+    $default  reduce using rule 20 (expr)
+
+
+State 61
+
+   26 func_call_arglist: . %empty  [')']
+   27                  | . func_call_arglist_arg
+   28                  | . func_call_arglist_arg ',' func_call_arglist
+   28                  | func_call_arglist_arg ',' . func_call_arglist
+   29 func_call_arglist_arg: . LABEL
+
+    LABEL  shift, and go to state 45
+
+    $default  reduce using rule 26 (func_call_arglist)
+
+    func_call_arglist      go to state 67
+    func_call_arglist_arg  go to state 47
+
+
+State 62
+
+   19 expr: LABEL '[' expr ']' .
+
+    $default  reduce using rule 19 (expr)
+
+
+State 63
+
+   34 var_decl: LABEL '[' INTEGER . ']'
+
+    ']'  shift, and go to state 68
+
+
+State 64
+
+   32 decl_list: var_decl ',' decl_list .
+
+    $default  reduce using rule 32 (decl_list)
+
+
+State 65
+
+    5 stmt: . ';'
+    6     | . expr ';'
+    7     | . decl_stmt ';'
+    8     | . if_stmt
+    9     | . while_stmt
+   10     | . '{' stmt_list '}'
+   11 expr: . expr '+' expr
+   12     | . expr '-' expr
+   13     | . expr '*' expr
+   14     | . expr '/' expr
+   15     | . '(' expr ')'
+   16     | . LABEL '=' expr
+   17     | . INTEGER
+   18     | . LABEL
+   19     | . LABEL '[' expr ']'
+   20     | . LABEL '(' func_call_arglist ')'
+   30 decl_stmt: . KWD_INT decl_list
+   35 if_stmt: . KWD_IF '(' expr ')' stmt
+   36 while_stmt: . KWD_WHILE '(' expr ')' stmt
+   36           | KWD_WHILE '(' expr ')' . stmt
+
+    LABEL      shift, and go to state 13
+    INTEGER    shift, and go to state 14
+    KWD_INT    shift, and go to state 15
+    KWD_WHILE  shift, and go to state 16
+    KWD_IF     shift, and go to state 17
+    ';'        shift, and go to state 18
+    '{'        shift, and go to state 19
+    '('        shift, and go to state 20
+
+    stmt        go to state 69
+    expr        go to state 22
+    decl_stmt   go to state 23
+    if_stmt     go to state 24
+    while_stmt  go to state 25
+
+
+State 66
+
+    5 stmt: . ';'
+    6     | . expr ';'
+    7     | . decl_stmt ';'
+    8     | . if_stmt
+    9     | . while_stmt
+   10     | . '{' stmt_list '}'
+   11 expr: . expr '+' expr
+   12     | . expr '-' expr
+   13     | . expr '*' expr
+   14     | . expr '/' expr
+   15     | . '(' expr ')'
+   16     | . LABEL '=' expr
+   17     | . INTEGER
+   18     | . LABEL
+   19     | . LABEL '[' expr ']'
+   20     | . LABEL '(' func_call_arglist ')'
+   30 decl_stmt: . KWD_INT decl_list
+   35 if_stmt: . KWD_IF '(' expr ')' stmt
+   35        | KWD_IF '(' expr ')' . stmt
+   36 while_stmt: . KWD_WHILE '(' expr ')' stmt
+
+    LABEL      shift, and go to state 13
+    INTEGER    shift, and go to state 14
+    KWD_INT    shift, and go to state 15
+    KWD_WHILE  shift, and go to state 16
+    KWD_IF     shift, and go to state 17
+    ';'        shift, and go to state 18
+    '{'        shift, and go to state 19
+    '('        shift, and go to state 20
+
+    stmt        go to state 70
+    expr        go to state 22
+    decl_stmt   go to state 23
+    if_stmt     go to state 24
+    while_stmt  go to state 25
+
+
+State 67
+
+   28 func_call_arglist: func_call_arglist_arg ',' func_call_arglist .
+
+    $default  reduce using rule 28 (func_call_arglist)
+
+
+State 68
+
+   34 var_decl: LABEL '[' INTEGER ']' .
+
+    $default  reduce using rule 34 (var_decl)
+
+
+State 69
+
+   36 while_stmt: KWD_WHILE '(' expr ')' stmt .
+
+    $default  reduce using rule 36 (while_stmt)
+
+
+State 70
+
+   35 if_stmt: KWD_IF '(' expr ')' stmt .
+
+    $default  reduce using rule 35 (if_stmt)
